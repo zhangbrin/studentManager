@@ -7,8 +7,6 @@ import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
 
-import config.DB;
-
 public class StuAddDialog extends JDialog implements ActionListener{
 	
 	//定义我需要的swing组件
@@ -79,61 +77,24 @@ public class StuAddDialog extends JDialog implements ActionListener{
 		this.setVisible(true);
 	}
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		//点击添加按钮
 		if(e.getSource()==jb1)
 		{
-			//对用户点击添加按钮后的响应动作
-			//连接数据库
-			Connection conn=null;
-			Statement stmt=null;
-			ResultSet rs=null;
-			PreparedStatement pstmt=null;
-			//连接数据库,判断数据库是否合法
-			try {
-				
-				
-				Class.forName(DB.driver);
-				conn=DriverManager.getConnection(DB.url,DB.user,DB.password);
-				
-//				//1：加载驱动
-//				Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-//				//创建数据对象
-//				String url="jdbc:microsoft:sqlserver://127.0.0.1:1433; databaseName=spdb1";
-//				//2：创建数据库、
-//				conn=DriverManager.getConnection(url,"sa","sangliyang");
-				//4：编辑语句对象
-				String strsql="insert into stu values(?,?,?,?,?,?)";
-				pstmt=conn.prepareStatement(strsql);
-				
-				//给参数赋值
-				pstmt.setString(1, jtf1.getText());
-				pstmt.setString(2, jtf2.getText());
-				pstmt.setString(3, jtf3.getText());
-				pstmt.setString(4, jtf4.getText());
-				pstmt.setString(5, jtf5.getText());
-				pstmt.setString(6, jtf6.getText());
-				
-				//4执行操作
-				pstmt.executeUpdate();
-				this.dispose();    //关闭学生对话框
-			} catch (Exception e1) {
-				// TODO: handle exception
-				e1.printStackTrace();
-			}finally
+
+			//希望添加
+			StuModel temp=new StuModel();
+			String sql="insert into stu values(?,?,?,?,?,?)";
+			String paras[]={jtf1.getText(), jtf2.getText(), jtf3.getText(), jtf4.getText(), jtf5.getText(),  jtf6.getText()};
+			if(!temp.updStu(sql, paras))   // 这段代码前面不能在出现temp.add(sql,paras),否则会报违反主键约束
 			{
-				//释放资源
-				try {
-					if(rs!=null) rs.close();
-					if(stmt!=null) stmt.close();
-					if(conn!=null)	conn.close();
-					
-				} catch (Exception e2) {
-					// TODO: handle exception
-					e2.printStackTrace();
-				}
+				//提示
+				JOptionPane.showMessageDialog(this, "添加失败");
+				return;
 			}
-			
+			//关闭对话框
+			this.dispose();
 		}
+		//点击取消按钮
 		else if (e.getSource()==jb2)
 		{
 			try {

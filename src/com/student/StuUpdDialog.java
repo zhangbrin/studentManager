@@ -7,8 +7,6 @@ import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
 
-import config.DB;
-
 public class StuUpdDialog extends JDialog implements ActionListener{
 	
 	/**
@@ -94,55 +92,14 @@ public class StuUpdDialog extends JDialog implements ActionListener{
 		// TODO Auto-generated method stub
 		if(e.getSource()==jb1)
 		{
-			//对用户点击修改按钮后的响应动作
-			//连接数据库
-			Connection conn=null;
-			Statement stmt=null;
-			ResultSet rs=null;
-			PreparedStatement pstmt=null;
-			//连接数据库,判断数据库是否合法
-			try {
-				
-				Class.forName(DB.driver);
-				conn=DriverManager.getConnection(DB.url,DB.user,DB.password);
-				
-//				//1：加载驱动
-//				Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-//				//创建数据对象
-//				String url="jdbc:microsoft:sqlserver://127.0.0.1:1433; databaseName=spdb1";
-//				//2：创建数据库、
-//				conn=DriverManager.getConnection(url,"sa","sangliyang");
-				//4：编辑语句对象
-				String strsql="update stu set stuName=?, stuSex=?,stuAge=?, sutJg=?, stuDept=? where stuId=? ";
-				pstmt=conn.prepareStatement(strsql);
-				//给？号赋值
-				pstmt.setString(1, jtf2.getText());
-				pstmt.setString(2, jtf3.getText());
-				pstmt.setString(3, jtf4.getText());
-				pstmt.setString(4, jtf5.getText());
-				pstmt.setString(5, jtf6.getText());
-				pstmt.setString(6, jtf1.getText());
-				
-				//4执行操作
-				pstmt.executeUpdate();
-				this.dispose();    //关闭学生对话框
-			} catch (Exception e1) {
-				// TODO: handle exception
-				e1.printStackTrace();
-			}finally
-			{
-				//释放资源
-				try {
-					if(rs!=null) rs.close();
-					if(stmt!=null) stmt.close();
-					if(conn!=null)	conn.close();
-					
-				} catch (Exception e2) {
-					// TODO: handle exception
-					e2.printStackTrace();
-				}
-			}
-			
+			//做一个SQL
+			//与编译语句对象
+			String sql="update stu set stuName=?, stuSex=?,stuAge=?, sutJg=?, stuDept=? where stuId=? ";
+			String []paras={jtf2.getText(),jtf3.getText(),jtf4.getText(),
+					jtf5.getText(),jtf6.getText(),jtf1.getText()};
+			StuModel temp=new StuModel();
+			temp.updStu(sql, paras);
+			this.dispose();
 		}
 		else if (e.getSource()==jb2)
 		{

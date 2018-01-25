@@ -7,8 +7,6 @@
 package com.student;
 import javax.swing.*;
 
-import config.DB;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -22,21 +20,11 @@ public class StuManage extends JFrame implements ActionListener{
 	JLabel jl1;
 	JButton jb1, jb2, jb3, jb4;
 	//JScrollPane jsp;
-	JTextField jtf;
-	StuModel sm;
-	
-	//定义连接数据库操作
-	PreparedStatement ps=null;
-	Connection ct=null;
-	ResultSet rs=null;
+	JTextField jtf=null;
+	StuModel sm=null;
 	
 	JTable jt=null;
 	JScrollPane jsp=null;
-	
-	     
-	
-	
-	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -97,8 +85,9 @@ public class StuManage extends JFrame implements ActionListener{
 		
 	}
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
 		//判断是那个按钮被按下 .jb1 和 actonperformed必须在同一个类里面
+		
+		//1.查询
 		if(arg0.getSource()==jb1)
 		{
 			System.out.println("用户想查询");
@@ -114,7 +103,7 @@ public class StuManage extends JFrame implements ActionListener{
 			jt.setModel(sm);
 			
 			}
-		//当用户点击查询
+		//2.添加
 		else if(arg0.getSource()==jb2)
 		{
 			StuAddDialog sa=new StuAddDialog(this,"添加学生",true);
@@ -126,7 +115,7 @@ public class StuManage extends JFrame implements ActionListener{
 			jt.setModel(sm);
 		}
 		
-		//点击的是修改
+		//3.修改
 		else if(arg0.getSource()==jb3)
 		{
 			//用户希望修改
@@ -147,7 +136,7 @@ public class StuManage extends JFrame implements ActionListener{
 		}
 		
 		
-		//点击的是删除
+		//4.删除
 		else if(arg0.getSource()==jb4)
 		{
 			//说明用户希望删除记录
@@ -161,49 +150,24 @@ public class StuManage extends JFrame implements ActionListener{
 				JOptionPane.showMessageDialog(this, "选择一行");
 				return;
 		}
+		
+		//删除数据库中的一条记录
 		//得到学生的编号
 		String stuId=(String)sm.getValueAt(rowNum, 0);    //返回编号
+		//创建一个sql语句
+		String sql="delete from stu where stuid=?";
+		String [] paras={stuId};
+		StuModel temp=new StuModel();
+		temp.updStu(sql, paras);
 		
-	//	System.out.println("id="+stuId);
 		
-		//连接数据库完成删除任务
-		try {
-			
-			Class.forName(DB.driver);
-			ct=DriverManager.getConnection(DB.url,DB.user,DB.password);
-			
-			//加载驱动
-//			Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-//			ct=DriverManager.getConnection("jdbc:microsoft:sqlserver://127.0.0.1:1433; databaseName=spdb1","sa","sangliyang");
-			
-			
-			//准备陈说语句 .注意要用  use spdb1; 否则会报 表不存
-			ps=ct.prepareStatement("delete from stu where stuid=?");
-			ps.setString(1, stuId);
-			//执行查询
-  			ps.executeUpdate();   
-  			 
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}finally
-		{
-			//关闭
-			try {
-				if(rs!=null) rs.close();
-				if(ps!=null) ps.close();
-				if(ct!=null) ct.close();
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-				
-			}
+		
 			//构建新的数据模型类，并更新
 			sm=new StuModel();
 			//更新Jtable
 			jt.setModel(sm);
 		}
 		}
-	}
-
 }
+
+

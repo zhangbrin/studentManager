@@ -18,6 +18,66 @@ public class StuModel extends AbstractTableModel{
 	PreparedStatement ps=null;
 	Connection ct=null;
 	ResultSet rs=null;
+	String url=DB.url;
+	String user=DB.user;
+	String passwd=DB.password;
+	String driver=DB.driver;
+	
+//添加insert（增）: String sql="insert into stu values(?,?,?,?,?,?)";String paras[]={jtf1.getText(), jtf2.getText(), jtf3.getText(), jtf4.getText(), jtf5.getText(),  jtf6.getText()};
+//删除delete（删）:	String sql="delete from stu where stuid=?";	String [] paras={stuId};
+//更新update（改）: String sql="update stu set stuName=?, stuSex=?,stuAge=?, sutJg=?, stuDept=? where stuId=? ";String []paras={jtf2.getText(),jtf3.getText(),jtf4.getText(),jtf5.getText(),jtf6.getText(),jtf1.getText()};
+	public boolean updStu(String sql, String []paras)
+	{
+		boolean b=true;
+		try {
+			//加载驱动
+			Class.forName(driver);
+			//得到连接
+			ct=DriverManager.getConnection(url, user, passwd);
+			//创建ps
+			ps=ct.prepareStatement(sql);
+			//给sql语句中的?号赋值
+			for(int i=0; i<paras.length; i++)
+			{
+				ps.setString(i+1, paras[i]);
+			}
+			//4执行操作
+			// 不能在出现ps.executeUpdate()否则会报违反主键约束
+			if(ps.executeUpdate()!=1)  // 执行sql语句
+			{
+				b=false;
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			b=false;
+			e.printStackTrace();
+		}finally{
+			//关闭资源
+			try {
+				if(rs!=null)
+				{
+					rs.close();
+				}
+				if(ps!=null)
+				{
+					ps.close();
+				}
+				if(ct!=null)
+				{
+					ct.close();
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+		}
+			
+	}
+		return b;
+}
+	
+	
+	
 	
 	public void init(String sql)
 	{
@@ -39,12 +99,14 @@ public class StuModel extends AbstractTableModel{
 		rowData=new Vector();
 		try {
 			
+			
 			Class.forName(DB.driver);
 			ct=DriverManager.getConnection(DB.url,DB.user,DB.password);
 			
-			//加载驱动
+//			//加载驱动
 //			Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
 //			ct=DriverManager.getConnection("jdbc:microsoft:sqlserver://127.0.0.1:1433; databaseName=spdb1","sa","sangliyang");
+			
 			
 			
 			
@@ -91,11 +153,6 @@ public class StuModel extends AbstractTableModel{
 		}
 	}
 	
-	public void addStu(String sql)
-	{
-		//根据用户输入的SQL语句完成添加任务
-		
-	}
 	
 	//通过传递的sql语句来获得数据模型
 	public StuModel(String sql)
