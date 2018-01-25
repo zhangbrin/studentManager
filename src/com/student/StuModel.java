@@ -1,90 +1,31 @@
 package com.student;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Vector;
 
 import javax.swing.table.*;
-
-import config.DB;
 public class StuModel extends AbstractTableModel{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	//rowData用来存放行数据
 	//columnNames存放列名
 	Vector rowData, columnNames;
 	
-	//定义连接数据库操作
-	PreparedStatement ps=null;
-	Connection ct=null;
-	ResultSet rs=null;
-	String url=DB.url;
-	String user=DB.user;
-	String passwd=DB.password;
-	String driver=DB.driver;
 	
-//添加insert（增）: String sql="insert into stu values(?,?,?,?,?,?)";String paras[]={jtf1.getText(), jtf2.getText(), jtf3.getText(), jtf4.getText(), jtf5.getText(),  jtf6.getText()};
-//删除delete（删）:	String sql="delete from stu where stuid=?";	String [] paras={stuId};
-//更新update（改）: String sql="update stu set stuName=?, stuSex=?,stuAge=?, sutJg=?, stuDept=? where stuId=? ";String []paras={jtf2.getText(),jtf3.getText(),jtf4.getText(),jtf5.getText(),jtf6.getText(),jtf1.getText()};
+	//增删改学生信息
 	public boolean updStu(String sql, String []paras)
 	{
-		boolean b=true;
-		try {
-			//加载驱动
-			Class.forName(driver);
-			//得到连接
-			ct=DriverManager.getConnection(url, user, passwd);
-			//创建ps
-			ps=ct.prepareStatement(sql);
-			//给sql语句中的?号赋值
-			for(int i=0; i<paras.length; i++)
-			{
-				ps.setString(i+1, paras[i]);
-			}
-			//4执行操作
-			// 不能在出现ps.executeUpdate()否则会报违反主键约束
-			if(ps.executeUpdate()!=1)  // 执行sql语句
-			{
-				b=false;
-			}
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-			b=false;
-			e.printStackTrace();
-		}finally{
-			//关闭资源
-			try {
-				if(rs!=null)
-				{
-					rs.close();
-				}
-				if(ps!=null)
-				{
-					ps.close();
-				}
-				if(ct!=null)
-				{
-					ct.close();
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-		}
-			
-	}
-		return b;
+		//创建一个 SqlHelper(如果程序的并发性不考虑可以把对象做出静态的)
+		SqlHelper sqlHelper=new SqlHelper();
+		return sqlHelper.updExecute(sql, paras);
 }
 	
-	
-	
-	
-	public void init(String sql)
+	//查询的本质就是初始化，带条件的查询
+	public void queryStu(String sql, String []paras)
 	{
-		if(sql.equals(""))
-		{
-			sql="select * from stu";
-		}
+		SqlHelper sqlHelper=null;
 		//中间
 		columnNames=new Vector();
 		columnNames.add("学号");
@@ -94,27 +35,11 @@ public class StuModel extends AbstractTableModel{
 		columnNames.add("籍贯");
 		columnNames.add("系别");
 		
-		rowData=new Vector();
 		//从数据库中取出数据
 		rowData=new Vector();
 		try {
-			
-			
-			Class.forName(DB.driver);
-			ct=DriverManager.getConnection(DB.url,DB.user,DB.password);
-			
-//			//加载驱动
-//			Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
-//			ct=DriverManager.getConnection("jdbc:microsoft:sqlserver://127.0.0.1:1433; databaseName=spdb1","sa","sangliyang");
-			
-			
-			
-			
-			//准备陈说语句 .注意要用  use spdb1; 否则会报 表不存
-			ps=ct.prepareStatement(sql);	
-			//执行查询
-  			 rs=ps.executeQuery();      
-  			 // 返回查询结果
+			sqlHelper=new SqlHelper ();
+			ResultSet rs=sqlHelper.queryExectue(sql, paras);
 			while(rs.next())
 			{
 				//rowData
@@ -133,37 +58,57 @@ public class StuModel extends AbstractTableModel{
 			// TODO: handle exception
 			e.printStackTrace();
 		}finally{
-			//关闭资源
-			try {
-				if(rs!=null)
-				{
-					rs.close();
-				}
-				if(ps!=null)
-				{
-					ps.close();
-				}
-				if(ct!=null)
-				{
-					ct.close();
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
+			sqlHelper.close();
 		}
 	}
 	
 	
-	//通过传递的sql语句来获得数据模型
-	public StuModel(String sql)
+	//用户只点击了查询按钮，没有输入用户名 的查询
+	public void queryStu(String sql)
 	{
-		this.init(sql);
-	}
-	//做一个构造函数初始化数据模型
-	public StuModel()
-	{
-		this.init("");
-	}
+		SqlHelper sqlHelper=null;
+		//中间
+		columnNames=new Vector();
+		columnNames.add("学号");
+		columnNames.add("姓名");
+		columnNames.add("性别");
+		columnNames.add("年龄");
+		columnNames.add("籍贯");
+		columnNames.add("系别");
+		
+		//从数据库中取出数据
+		rowData=new Vector();
+		try {
+			sqlHelper=new SqlHelper ();
+			ResultSet rs=sqlHelper.quereyExecute(sql);
+			while(rs.next())
+			{
+				//rowData
+				Vector hang=new Vector();
+				
+				hang.add(rs.getString(1));
+				hang.add(rs.getString(2));
+				hang.add(rs.getString(3));
+				hang.add(rs.getInt(4));
+				hang.add(rs.getString(5));
+				hang.add(rs.getString(6));
+				//加入到rowData
+				rowData.add(hang);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}finally{
+			sqlHelper.close();
+		}
+	}	
+	
+	
+	
+	
+	
+	
+	
 	
 	//得到共有多少列
 	public int getColumnCount() {

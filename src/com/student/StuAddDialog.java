@@ -2,13 +2,16 @@
  * 修改学生信息
  */
 package com.student;
-import java.sql.*;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
 
 public class StuAddDialog extends JDialog implements ActionListener{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	//定义我需要的swing组件
 	JLabel jl1, jl2, jl3, jl4, jl5, jl6;
 	JButton jb1,jb2;
@@ -77,7 +80,7 @@ public class StuAddDialog extends JDialog implements ActionListener{
 		this.setVisible(true);
 	}
 	public void actionPerformed(ActionEvent e) {
-		//点击添加按钮
+		// TODO Auto-generated method stub
 		if(e.getSource()==jb1)
 		{
 
@@ -94,7 +97,6 @@ public class StuAddDialog extends JDialog implements ActionListener{
 			//关闭对话框
 			this.dispose();
 		}
-		//点击取消按钮
 		else if (e.getSource()==jb2)
 		{
 			try {

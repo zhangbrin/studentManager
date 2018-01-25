@@ -2,7 +2,6 @@
  * 修改学生信息
  */
 package com.student;
-import java.sql.*;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
@@ -89,7 +88,6 @@ public class StuUpdDialog extends JDialog implements ActionListener{
 		this.setVisible(true);
 	}
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		if(e.getSource()==jb1)
 		{
 			//做一个SQL
@@ -106,7 +104,6 @@ public class StuUpdDialog extends JDialog implements ActionListener{
 			try {
 				this.dispose();    //关闭学生对话框
 			} catch (Exception e3) {
-				// TODO: handle exception
 				e3.printStackTrace();
 			}
 		}
