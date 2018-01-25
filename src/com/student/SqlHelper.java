@@ -33,6 +33,8 @@ public class SqlHelper {
 			}
 	}
 	
+	
+	//无条件查询
 	public ResultSet quereyExecute(String sql)
 	{
 		try {
@@ -53,8 +55,8 @@ public class SqlHelper {
 		return rs;
 	}
 	
-	//查询数据库
-	public ResultSet queryExectue(String sql, String []paras)
+	//带条件查询
+	public ResultSet queryExecute(String sql, String []paras)
 	{
 		try {
 			//加载驱动

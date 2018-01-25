@@ -78,6 +78,7 @@ public class StuManage extends JFrame implements ActionListener {
 		this.setSize(400, 300);
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("学生信息管理迷你系统   -Brin作品");
 
 		this.setVisible(true);
 
@@ -86,30 +87,30 @@ public class StuManage extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		// 判断是那个按钮被按下 .jb1 和 actonperformed必须在同一个类里面
 		if (arg0.getSource() == jb1) {
+			// System.out.println("用户想查询");
 			// 因为把表的数据封装在StuModel中了。我们就很容易完成查询
 			String name = this.jtf.getText().trim();
-			System.out.println("name: "+name);
-			
-			if (!(name == null || name.length() <= 0)){
-				System.out.println("-------");
-				
+			// System.out.println("name:"+name);
+
+			if (name == null || name.length() <= 0) {
+				String sql = "select * from stu";
+				sm = new StuModel();
+				sm.queryStu(sql);
+				jt.setModel(sm);
+
+			} else {
 				// 写一个sql语句
-				String sql = "select * from stu where stuName=?";
+				// String sql = "select * from stu where stuName=?";
 				String paras[] = { name };
 				// 模糊查询
-				// String sql="use spdb1; select *from stu where stuName like
-				// '%"+name+"%'";
+				String sql = "select * from stu where stuName like '%" + name + "%'";
 				// 构建新的数据模型类，并更新
 				sm = new StuModel();
-				sm.queryStu(sql, paras);
-			}else{
-				sm = new StuModel();
-				sm.queryStu("select * from stu");
-				
-			}
+				sm.queryStu(sql);
+				// 更新Jtable
+				jt.setModel(sm);
 
-			// 更新Jtable
-			jt.setModel(sm);
+			}
 
 		}
 
